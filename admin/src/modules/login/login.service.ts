@@ -1,7 +1,7 @@
 /*
  * @Author: guyatao
  * @Date: 2021-12-08 18:30:53
- * @LastEditTime: 2022-12-12 20:49:13
+ * @LastEditTime: 2022-12-15 20:06:59
  * @LastEditors: usergyt userguyatao@163.com
  * @Description: 登录 service
  * @FilePath: /meimei-admin/src/modules/login/login.service.ts
@@ -108,7 +108,7 @@ export class LoginService {
   /* 登录授权 */
   async authLogin(reqLoginDto: ReqLoginDto) {
 
-    // return { sellserId: '1478093654' }
+    return { sellserId: '1478093654' }
     // const { user } = reqLoginDto as any;
     //获取token
     let info: any = {}

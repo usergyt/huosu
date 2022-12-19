@@ -100,8 +100,8 @@ export class SysGoodsController {
   @Get('expressList')
 
   async getExpressList(@User(UserEnum.userId, UserInfoPipe) userId: string) {
-    console.log(userId)
-    return await this.HttpServiceApi.getExpressList()
+    // this.HttpServiceApi.uploadImg(['http://img.alicdn.com/imgextra/i4/2596264565/TB2p30elFXXXXXQXpXXXXXXXXXX_!!2596264565.jpg'], 2)
+     return await this.HttpServiceApi.getExpressList()
   }
   /* 提交 */
   @Post('submit')

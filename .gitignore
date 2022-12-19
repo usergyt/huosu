@@ -3,6 +3,8 @@ node_modules
 /build
 /admin/src/config 
 /admin/dist
+/ui/.env.development
+/ui/.env.production
 # local env files
 .env.local
 .env.*.local

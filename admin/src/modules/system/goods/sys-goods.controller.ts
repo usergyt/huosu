@@ -100,8 +100,15 @@ export class SysGoodsController {
   @Get('expressList')
 
   async getExpressList(@User(UserEnum.userId, UserInfoPipe) userId: string) {
-    // this.HttpServiceApi.uploadImg(['http://img.alicdn.com/imgextra/i4/2596264565/TB2p30elFXXXXXQXpXXXXXXXXXX_!!2596264565.jpg'], 2)
-     return await this.HttpServiceApi.getExpressList()
+
+    return await this.HttpServiceApi.getExpressList()
+  }
+  /* 获取运费模版自定义 */
+
+  @Get('expressCustomList')
+
+  async getExpressCustomList(@User(UserEnum.userId, UserInfoPipe) userId: string) {
+    return await this.HttpServiceApi.getExressCustomTempate(1)
   }
   /* 提交 */
   @Post('submit')

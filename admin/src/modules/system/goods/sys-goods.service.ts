@@ -78,16 +78,20 @@ export class SysGoodsService {
 
   /* 商品铺货 */
   async saveGoodsToplatform(arr: Array<any>, params: any) {
+    let configData: any = {};
+    let refundRule = params.refundRule; //退款规则
+    //获取类目配置
+    await this.HttpServiceApi.getConfig(params.categoryId).then((res) => {
+      configData = res.data;
+      // let ruleList = configData.categoryConfig.refundRuleList
+      // if (!ruleList.includes(refundRule)) {
+      //   refundRule = ruleList[0]//默认第一个
+      // }
+      // configData.refundRuleList 退款规则
+    });
     for (let m = 0; m < arr.length; m++) {
       let goods = arr[m];
-
-      let configData: any = {};
       let itemPropValues = [];
-      //获取类目配置
-      await this.HttpServiceApi.getConfig(params.categoryId).then((res) => {
-        configData = res.data;
-        // configData.refundRuleList 退款规则
-      });
       //获取类目属性值  从淘宝props 匹配
       try {
         for (let i = 0; i < configData.propConfigs.length; i++) {
@@ -169,79 +173,86 @@ export class SysGoodsService {
 
         const imgUrl = this.sharedService.addImgPrefix(goods.item_imgs);
         // const detailImg = await this.HttpServiceApi.uploadImg(imgUrl, 2) //上传外部转内部图片
+        let reqData: any = {
+          title: goods.title.substring(0, 30),
+          relItemId: goods.num_iid, //new Date().getTime()
+          categoryId: params.categoryId, //走接口
+          categoryName: goods.brand, //可不传
+          purchaseLimit: false, //限购数量 true limitCount必穿
+          // "limitCount": 2,
+          itemPropValues: itemPropValues,
+          expressTemplateId: params.expressId, //运费模板id
+          imageUrls: imgUrl, //商品主图  item.item_imgs
+          skuList: this.sharedService.packageSku(
+            goods.skus.sku,
+            goods.props_img,
+            params.computedPrice,
+            goods.stock
+          ),
 
-        const data = await this.sharedService.post(
-          {
-            title: goods.title.substring(0, 30),
-            relItemId: goods.num_iid , //new Date().getTime() 
-            categoryId: params.categoryId, //走接口
-            categoryName: goods.brand, //可不传
-            purchaseLimit: false, //限购数量 true limitCount必穿
-            // "limitCount": 2,
-            itemPropValues: itemPropValues,
-            expressTemplateId: 17658204754, //运费模板id
-            imageUrls: imgUrl, //商品主图  item.item_imgs
-            skuList: this.sharedService.packageSku(
-              goods.skus.sku,
-              goods.props_img
-            ),
-
-            details: goods.title,
-            detailImageUrls: [], // 获取desc_img 目前是空的
-            // "stockPartner": false,
-            itemRemark: "商品备注",
-            serviceRule: {
-              certStartTime: 0,
-              orderPurchaseLimitType: 0,
-              deliveryMethod: "",
-              certMerchantCode: "",
-              customerInfo: {
-                customerInfoType: "",
-                customerCertificateType: [],
-              },
-              maxOrderCount: 0,
-              theDayOfDeliverGoodsTime: 0,
-              unavailableTimeRule: {
-                weeks: [],
-                holidays: [],
-                timeRanges: [],
-              },
-              minOrderCount: 0,
-              priceProtectDays: 0,
-              refundRule: "1",
-              servicePromise: {
-                freshRotRefund: false,
-                brokenRefund: false,
-                allergyRefund: false,
-              },
-              certExpireType: 0,
-              certExpDays: 0,
-              promiseDeliveryTime: 86400,
-              certEndTime: 0,
+          details: goods.title,
+          detailImageUrls: [], // 获取desc_img 目前是空的
+          // "stockPartner": false,
+          itemRemark: "商品备注",
+          serviceRule: {
+            certStartTime: 0,
+            orderPurchaseLimitType: 0,
+            deliveryMethod: "",
+            certMerchantCode: "",
+            customerInfo: {
+              customerInfoType: "",
+              customerCertificateType: [],
             },
-            // "saleTimeFlag": false,
-            timeOfSale: 0,
-            // "payWay": 2,
-            multipleStock: false,
-            poiIds: [],
+            maxOrderCount: 0,
+            theDayOfDeliverGoodsTime: 0,
+            immediatelyOnOfflineFlag: params.immediatelyOnOfflineFlag,
+            unavailableTimeRule: {
+              weeks: [],
+              holidays: [],
+              timeRanges: [],
+            },
+            minOrderCount: 0,
+            priceProtectDays: 0,
+            refundRule: refundRule,
+            servicePromise: {
+              freshRotRefund: false,
+              brokenRefund: false,
+              allergyRefund: false,
+            },
+            certExpireType: 0,
+            certExpDays: 0,
+            certEndTime: 0,
           },
-          "open.item.new"
-        );
-        /*采集商品入库 */
-        // let reqAddGoodsDtoList: Array<ReqAddGoodsDto> = arr;  如果是list可使用insert批量
-        let reqAddGoodsDto: ReqAddGoodsDto = goods;
-        this.sysGoodsRepository.save(reqAddGoodsDto).catch((err) => {
-          // throw new ApiException(err);
-        });
-        if (data.data.result === 1) { //上架快手成功
+          // "saleTimeFlag": false,
+          timeOfSale: 0,
+          // "payWay": 2,
+          multipleStock: false,
+          poiIds: [],
+        };
+        if (params.deliveryTime !== 0) {
+          reqData.serviceRule.promiseDeliveryTime = params.deliveryTime;
+        } else if (params.time !== 0) {
+          reqData.serviceRule.deliverGoodsInteralTime = params.time;
+        }
+
+        const data = await this.sharedService.post(reqData, "open.item.new");
+        goods.message = data.data.error_msg;
+        if (data.data.result === 1) {
+          //上架快手成功
           /*更新商品详情图片 */
           this.HttpServiceApi.updateDetailImg({
             kwaiItemId: data.data.data.kwaiItemId,
             detailImageUrls: imgUrl,
           });
-        }else{
-          console.log(data.data)
+        } else {
+          console.log(data.data);
         }
+        /*采集商品记录入库 */
+        // let reqAddGoodsDtoList: Array<ReqAddGoodsDto> = arr;  如果是list可使用insert批量
+        let reqAddGoodsDto: ReqAddGoodsDto = goods;
+        this.sysGoodsRepository.save(reqAddGoodsDto).catch((err) => {
+          // throw new ApiException(err);
+        });
       } catch (error) {
         throw new ApiException(error);
       }

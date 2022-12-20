@@ -5,6 +5,7 @@ node_modules
 /admin/dist
 /ui/.env.development
 /ui/.env.production
+/ui/.env.staging
 # local env files
 .env.local
 .env.*.local

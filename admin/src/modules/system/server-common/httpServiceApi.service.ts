@@ -1,7 +1,7 @@
 /*
  * @Author: guyatao
  * @Date: 2021-12-08 17:14:57
- * @LastEditTime: 2022-12-18 21:55:12
+ * @LastEditTime: 2022-12-19 22:28:58
  * @LastEditors: usergyt userguyatao@163.com
  * @Description: 公共方法
  *
@@ -26,7 +26,7 @@ export class HttpServiceApi {
     private readonly sharedService: SharedService,
 
     @InjectRedis() private readonly redis: Redis
-  ) {}
+  ) { }
   //类目列表
   async getCategory() {
     const data = await this.sharedService.get({}, "open.item.category", "");
@@ -36,7 +36,7 @@ export class HttpServiceApi {
   //运费模版
   async getExpressList() {
     const data = await this.sharedService.get(
-      { offset: 1, limit: 20, searchUsed: false },
+      { offset: 0, limit: 20, searchUsed: true },
       "open.logistics.express.template.list",
       ""
     );
@@ -145,5 +145,19 @@ export class HttpServiceApi {
    */
   updateDetailImg(params: any) {
     return this.sharedService.post(params, "open.item.detail.images.update");
+  }
+
+
+  /* 自定义运费模版 */
+  async getExressCustomTempate(type: Number) {
+    const data = await this.sharedService.get(
+      {
+        type: type
+      },
+      "open.express.custom.tempate.list.query",
+      ""
+    );
+    console.log(data)
+    return data.data;
   }
 }

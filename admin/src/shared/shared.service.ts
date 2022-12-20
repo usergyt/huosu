@@ -1,7 +1,7 @@
 /*
  * @Author: guyatao
  * @Date: 2021-12-08 17:14:57
- * @LastEditTime: 2022-12-18 21:56:20
+ * @LastEditTime: 2022-12-20 00:58:46
  * @LastEditors: usergyt userguyatao@163.com
  * @Description: 公共方法
  *
@@ -216,17 +216,24 @@ export class SharedService {
    * @param {*} placeholder
    * @return {*}
    */
-  packageSku(arr: Array<string>, imgSkuList: Array<string>): Array<string> {
+  packageSku(arr: Array<string>, imgSkuList: Array<string>, computedPrice: any, skuStock: number): Array<string> {
     let skuList = [];
     const pattern =
       /[`~!@#$^&*()=|{}':;',\\\[\]\.<>\/?~！@#￥……&*（）——|{}【】'；：""'。，、？\s]/g;
 
     try {
+      let maxPrice = 0
       for (let i = 0; i < arr.length; i++) {
         let item: any = {};
         item.relSkuId = Number(arr[i]["sku_id"]);
-        item.skuStock = Number(arr[i]["quantity"]);
-        item.skuSalePrice = parseInt(arr[i]["price"]) * 100;
+        const stock = Number(arr[i]["quantity"])
+        item.skuStock = stock < skuStock ? 0 : stock;
+        item.skuSalePrice = parseInt(arr[i]["price"]) * 100; //销售价格
+        if (computedPrice.multiple) {
+          item.skuSalePrice = item.skuSalePrice * parseInt(computedPrice.multiple) + computedPrice.price
+        }
+        maxPrice = maxPrice > item.skuSalePrice ? maxPrice : item.skuSalePrice
+
         item.gtinCode = "";
         item.skuNick = ""; //sku编码，分仓商品必传
 
@@ -254,10 +261,22 @@ export class SharedService {
 
         skuList.push(item);
       }
+      //设置划线价格
+      // for (let i = 0; i < skuList.length; i++) {
+
+      //   if (computedPrice.operator == "+") {
+      //     skuList[i].skuMarketPrice = maxPrice + parseInt(computedPrice.linePrice)
+      //   } else if (computedPrice.operator == "*") {
+      //     skuList[i].skuMarketPrice = maxPrice * parseInt(computedPrice.linePrice)
+      //   } else {
+      //     skuList[i].skuMarketPrice = skuList[i].skuSalePrice + 10
+      //   }
+      // }
+
     } catch (error) {
       console.log(error);
     }
-     return skuList;
+    return skuList;
   }
 
   /**
@@ -271,7 +290,7 @@ export class SharedService {
     try {
       // const token = access_token ? access_token : await this.redis.get(`access_token:1478093654`);
       const token =
-        "ChFvYXV0aC5hY2Nlc3NUb2tlbhJAMyi9ZLYsV21AObllo0Ag8tSMBEVn4dZmbFKZs1691AT4gQ3AVZV6-JV55ktc12l1GLBFfxJDGeYbIEjS_S2p-BoS8dsD42CUQrG4hOifcpo8vBuxIiDm-I7RZkmjGGnFHsDhnPVrFX8xhLzfjoyd1SZbdBhG7CgFMAE";
+        "ChFvYXV0aC5hY2Nlc3NUb2tlbhJA2WNhtFfTa7SfwUWMo4pnEwsL8egcjtYN_1c6d85cdijQUyV0X2OccvUkg61XJUSztaR7WW6SpRcYV97SUGJiDxoSYfZ9co1oSiGh93iNTWvF5WYVIiCS-5OK5U1mIPlltPkt7r_7MMIEdaHvkZSsXCZFwVAoPygFMAE";
 
       const date = new Date();
       const p: any = {
@@ -317,7 +336,7 @@ export class SharedService {
     try {
       // const token = access_token ? access_token : await this.redis.get(`access_token:1478093654`);
       const token =
-        "ChFvYXV0aC5hY2Nlc3NUb2tlbhJAMyi9ZLYsV21AObllo0Ag8tSMBEVn4dZmbFKZs1691AT4gQ3AVZV6-JV55ktc12l1GLBFfxJDGeYbIEjS_S2p-BoS8dsD42CUQrG4hOifcpo8vBuxIiDm-I7RZkmjGGnFHsDhnPVrFX8xhLzfjoyd1SZbdBhG7CgFMAE";
+        "ChFvYXV0aC5hY2Nlc3NUb2tlbhJA2WNhtFfTa7SfwUWMo4pnEwsL8egcjtYN_1c6d85cdijQUyV0X2OccvUkg61XJUSztaR7WW6SpRcYV97SUGJiDxoSYfZ9co1oSiGh93iNTWvF5WYVIiCS-5OK5U1mIPlltPkt7r_7MMIEdaHvkZSsXCZFwVAoPygFMAE";
 
       const date = new Date();
       const p: any = {
@@ -358,7 +377,7 @@ export class SharedService {
     try {
       // const token = access_token ? access_token : await this.redis.get(`access_token:1478093654`);
       const token =
-        "ChFvYXV0aC5hY2Nlc3NUb2tlbhJAMyi9ZLYsV21AObllo0Ag8tSMBEVn4dZmbFKZs1691AT4gQ3AVZV6-JV55ktc12l1GLBFfxJDGeYbIEjS_S2p-BoS8dsD42CUQrG4hOifcpo8vBuxIiDm-I7RZkmjGGnFHsDhnPVrFX8xhLzfjoyd1SZbdBhG7CgFMAE";
+        "ChFvYXV0aC5hY2Nlc3NUb2tlbhJA2WNhtFfTa7SfwUWMo4pnEwsL8egcjtYN_1c6d85cdijQUyV0X2OccvUkg61XJUSztaR7WW6SpRcYV97SUGJiDxoSYfZ9co1oSiGh93iNTWvF5WYVIiCS-5OK5U1mIPlltPkt7r_7MMIEdaHvkZSsXCZFwVAoPygFMAE";
       const date = new Date();
       const p: any = {
         access_token: token,

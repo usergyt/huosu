@@ -37,34 +37,29 @@
         <div class="el-table el-table--enable-row-hover el-table--medium">
           <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="150px" size="mini"
             class="demo-ruleForm">
-            <el-form-item label="品牌名称" prop="name">
-
-              <el-col :span="8">
-                <el-input v-model="ruleForm.name" />
-              </el-col>
-            </el-form-item>
             <el-form-item label="商品分类" prop="category">
-              <el-select v-model="ruleForm.category" filterable placeholder="请选择一级分类" @change="categoryChange">
+              <el-select v-model="ruleForm.category" filterable placeholder="请选择一级分类" style="width:150px;"  @change="categoryChange">
                 <el-option v-for="item in categoryList" :key="item.categoryId" :label="item.categoryName"
                   :value="item.categoryId" />
               </el-select>
-              <el-select v-model="ruleForm.category1" style="margin-left:5px" filterable placeholder="请选择"
+              <el-select v-model="ruleForm.category1" style="margin-left:5px;width:150px;" filterable placeholder="请选择"
                 @change="categoryChange1">
                 <el-option v-for="item in categoryList1" :key="item.categoryId" :label="item.categoryName"
                   :value="item.categoryId" />
               </el-select>
-              <el-select v-model="ruleForm.category2" style="margin-left:5px" filterable placeholder="请选择"
+              <el-select v-model="ruleForm.category2" style="margin-left:5px;width:150px;" filterable placeholder="请选择"
                 @change="categoryChange2">
                 <el-option v-for="item in categoryList2" :key="item.categoryId" :label="item.categoryName"
                   :value="item.categoryId" />
               </el-select>
-              <el-select v-model="ruleForm.category3" style="margin-left:5px" filterable placeholder="请选择"
+              <el-select v-model="ruleForm.category3" style="margin-left:5px;width:150px;" filterable placeholder="请选择"
                 @change="categoryChange3">
                 <el-option v-for="item in categoryList3" :key="item.categoryId" :label="item.categoryName"
                   :value="item.categoryId" />
               </el-select>
             </el-form-item>
             <el-form-item label="运费模版" prop="region">
+
               <el-select v-model="ruleForm.express" placeholder="请选择运费模版">
                 <el-option v-for="item in expressList" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
@@ -73,8 +68,8 @@
             <el-form-item label="价格设置" prop="price">
               <el-col :span="8" style="display: flex;">
                 销售价格=抓取价格 x
-                <el-input v-model="ruleForm.name" style="width:100px" /> +
-                <el-input v-model="ruleForm.name" style="width:100px" /> 元
+                <el-input v-model="ruleForm.multiple" style="width:100px" /> +
+                <el-input v-model="ruleForm.price" style="width:100px" /> 元
               </el-col>
               <el-col :span="8" style="display: flex;">
                 市场价格=抓取价格
@@ -85,7 +80,7 @@
                   <el-option key="4" label="/" value="/" />
 
                 </el-select>
-                <el-input v-model="ruleForm.marketPrice" style="width:100px" />
+                <el-input v-model="ruleForm.linePrice" style="width:100px" />
               </el-col>
             </el-form-item>
             <el-form-item label="详情图处理" prop="detailPic">
@@ -94,9 +89,9 @@
                 <el-radio label="去除广告图" />
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="退款规则" prop="rules">
+            <el-form-item label="退款规则" prop="refundRule">
               <el-col :span="4" style="display:flex">
-                <el-select v-model="ruleForm.rules" style="width:150px" placeholder="请选择退款规则">
+                <el-select v-model="ruleForm.refundRule" style="width:150px" placeholder="请选择退款规则">
                   <el-option key="1" label="支持7天无理由退货" value="1" />
                   <el-option key="4" label="不支持7天无理由退货" value="4" />
                   <el-option key="5" label="支持7天无理由退货(拆封后不支持)" value="5" />
@@ -108,44 +103,54 @@
               </el-col>
               <el-col :span="4" style="display:flex;">
                 承诺发货时间：
-                <el-select style="width:100px">
-                  <el-option key="24" label="24小时" value="24" />
-                  <el-option key="48" label="48小时" value="48" />
-                  <el-option key="3" label="3天" value="3" />
-                  <el-option key="4" label="4天" value="4" />
-                  <el-option key="5" label="5天" value="5" />
-                  <el-option key="6" label="6天" value="6" />
-                  <el-option key="7" label="7天" value="7" />
-                  <el-option key="8" label="8天" value="8" />
-                  <el-option key="9" label="9天" value="9" />
-                  <el-option key="10" label="10天" value="10" />
-                  <el-option key="11" label="11天" value="11" />
-                  <el-option key="12" label="12天" value="12" />
-                  <el-option key="13" label="13天" value="13" />
-                  <el-option key="14" label="14天" value="14" />
-                  <el-option key="15" label="15天" value="15" />
+                <el-select style="width:100px" v-model="ruleForm.deliveryTime">
+                  <el-option key="24" label="24小时" :value="86400" />
+                  <el-option key="48" label="48小时" :value="172800" />
+                  <el-option key="3" label="3天" :value="259200" />
+                  <el-option key="4" label="4天" :value="345600" />
+                  <el-option key="5" label="5天" :value="432000" />
+                  <el-option key="6" label="6天" :value="518400" />
+                  <el-option key="7" label="7天" :value="604800" />
+                  <el-option key="8" label="8天" :value="691200" />
+                  <el-option key="9" label="9天" :value="777600" />
+                  <el-option key="10" label="10天" :value="864000" />
+                  <el-option key="11" label="11天" :value="950400" />
+                  <el-option key="12" label="12天" :value="1036800" />
+                  <el-option key="13" label="13天" :value="1123200" />
+                  <el-option key="14" label="14天" :value="1209600" />
+                  <el-option key="15" label="15天" :value="1296000" />
                 </el-select>
               </el-col>
 
               <el-col :span="12" style="display:flex">
-
-                <el-checkbox v-model="ruleForm.presell" label="是否预售" style="width: 80px;" name="type" />
-                <el-date-picker v-if="ruleForm.presell" v-model="ruleForm.time" style="width:120px" type="date"
+                <el-checkbox v-model="ruleForm.isAdvanceSSale" :checked="ruleForm.isAdvanceSSale" label="是否预售"
+                  style="width: 80px;" name="type" />
+                <el-date-picker v-if="ruleForm.isAdvanceSSale" v-model="ruleForm.time" style="width:120px" type="date"
                   placeholder="预售时间" />
-                <el-checkbox style="margin-left:10px" label="补全属性（匹配不上的随机填）" name="type" />
+                <el-checkbox style="margin-left:10px" :checked="ruleForm.autoCompletion" label="补全属性（匹配不上的随机填）"
+                  name="type" />
 
               </el-col>
             </el-form-item>
 
+            <el-form-item label="是否立即上架" prop="stock">
+              <el-checkbox v-model="ruleForm.immediatelyOnOfflineFlag" :checked="ruleForm.immediatelyOnOfflineFlag == 0"
+                label="是否立即上架" style="width: 80px;" name="type" />
+            </el-form-item>
             <el-form-item label="库存过滤" prop="stock">
               当原商品库存小于
-              <el-input-number v-model="ruleForm.stock" :min="1" :max="1000" @change="handleChange" />置为0
+              <el-input-number v-model="ruleForm.stock" :min="0" :max="1000" @change="handleChange" />置为0
             </el-form-item>
+            <el-form-item label="品牌名称" prop="brand">
 
+              <el-col :span="8">
+                <el-input v-model="ruleForm.brand" style="width:100px;margin-right:5px" />
+                <el-radio v-model="ruleForm.brandAuto" label="2">匹配不上的随机填</el-radio>
+              </el-col>
+            </el-form-item>
             <el-form-item>
               <el-button @click="goback">返回</el-button>
               <el-button type="primary" @click="submitFormStep2('ruleForm')">开始搬家</el-button>
-
             </el-form-item>
           </el-form>
         </div>
@@ -163,11 +168,17 @@
 </template>
 
 <script>
-import { categoryList, expressList, addDept, updateDept, submitTask } from '@/api/system/goods'
+import {
+  categoryList,
+  expressList,
+  addDept,
+  updateDept,
+  submitTask,
+} from "@/api/system/goods";
 
 export default {
-  name: 'Dept',
-  dicts: ['sys_normal_disable'],
+  name: "Dept",
+  dicts: ["sys_normal_disable"],
   components: {},
   data() {
     return {
@@ -177,16 +188,16 @@ export default {
       loading: true,
 
       // 弹出层标题
-      title: '',
+      title: "",
       // 是否显示弹出层
 
       // 查询参数
       queryParams: {
         urls: [],
-        categoryId: ''
+        categoryId: "",
       },
       // 表单参数
-      form: { urls: '' },
+      form: { urls: "" },
       categoryAll: [], // 所有分类
       categoryList: [],
       categoryList1: [],
@@ -195,43 +206,38 @@ export default {
       expressList: [],
       options: [],
       ruleForm: {
-        operator: '+',
-        marketPrice: 15,
-        name: '',
-        category: '',
-        region: '',
-        date1: '',
-        date2: '',
+        brand: '',
+        brandAuto: '2',
+        immediatelyOnOfflineFlag: 0,
+        express: null,
+        stock: 0,
+        autoCompletion: true,
+        isAdvanceSSale: false,
+        deliveryTime: 172800,
+        refundRule: "1",
+        operator: "+",
+        multiple: 1,
+        price: 2,
+        linePrice: 15,
+        name: "",
+        category: "",
+        region: "",
+        date1: "",
+        date2: "",
         delivery: false,
         type: [],
-        resource: '',
-        desc: '',
-        num: 1
+        resource: "",
+        desc: "",
+        num: 1,
       },
       // 表单校验
       rules: {
-
         name: [
           { required: true, message: '请输入活动名称', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         category: [
           { required: true, message: '请选择商品类目', trigger: 'change' }
-        ],
-        date1: [
-          { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-        ],
-        date2: [
-          { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
-        ],
-        type: [
-          { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-        ],
-        resource: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ],
-        desc: [
-          { required: true, message: '请填写活动形式', trigger: 'blur' }
         ]
       }
     }
@@ -242,99 +248,102 @@ export default {
   },
   methods: {
     onRefreshTemp() {
-
+      this.getExpressList()
     },
     // 获取类目
     getCategoryList() {
-      categoryList().then(res => {
-        const list = res.data
-        this.categoryAll = res.data
-        const newList = []
+      categoryList().then((res) => {
+        const list = res.data;
+        this.categoryAll = res.data;
+        const newList = [];
         for (let i = 0; i < list.length; i++) {
           if (list[i].categoryPid === 0) {
-            newList.push(list[i])
+            newList.push(list[i]);
           }
         }
-        this.categoryList = newList
-      })
+        this.categoryList = newList;
+      });
     },
+    handleClose() { },
     // 获取运费模版
     getExpressList() {
-      expressList().then(res => {
-        this.expressList = res.data.expressTemplateDetailVOS
-      })
+      expressList().then((res) => {
+        this.expressList = res.data.expressTemplateDetailVOS;
+        this.ruleForm.express = this.expressList[0].id;
+      });
     },
+
     goback() {
-      this.step = 1
+      this.step = 1;
     },
     categoryChange(e) {
-      const newList = []
+      const newList = [];
       for (let i = 0; i < this.categoryAll.length; i++) {
         if (this.categoryAll[i].categoryPid === e) {
-          newList.push(this.categoryAll[i])
+          newList.push(this.categoryAll[i]);
         }
       }
       if (newList.length > 0) {
-        this.queryParams.categoryId = ''
+        this.queryParams.categoryId = "";
       } else {
-        this.queryParams.categoryId = e
+        this.queryParams.categoryId = e;
       }
-      this.ruleForm.category1 = ''
-      this.ruleForm.category2 = ''
-      this.ruleForm.category3 = ''
-      this.categoryList1 = newList
+      this.ruleForm.category1 = "";
+      this.ruleForm.category2 = "";
+      this.ruleForm.category3 = "";
+      this.categoryList1 = newList;
     },
     categoryChange1(e) {
-      const newList = []
+      const newList = [];
       for (let i = 0; i < this.categoryAll.length; i++) {
         if (this.categoryAll[i].categoryPid === e) {
-          newList.push(this.categoryAll[i])
+          newList.push(this.categoryAll[i]);
         }
       }
       if (newList.length > 0) {
-        this.queryParams.categoryId = ''
+        this.queryParams.categoryId = "";
       } else {
-        this.queryParams.categoryId = e
+        this.queryParams.categoryId = e;
       }
-      this.ruleForm.category2 = ''
-      this.ruleForm.category3 = ''
-      this.categoryList2 = newList
+      this.ruleForm.category2 = "";
+      this.ruleForm.category3 = "";
+      this.categoryList2 = newList;
     },
     categoryChange2(e) {
-      const newList = []
+      const newList = [];
       for (let i = 0; i < this.categoryAll.length; i++) {
         if (this.categoryAll[i].categoryPid === e) {
-          newList.push(this.categoryAll[i])
+          newList.push(this.categoryAll[i]);
         }
       }
       if (newList.length > 0) {
-        this.queryParams.categoryId = ''
+        this.queryParams.categoryId = "";
       } else {
-        this.queryParams.categoryId = e
+        this.queryParams.categoryId = e;
       }
-      this.ruleForm.category3 = ''
-      this.categoryList3 = newList
+      this.ruleForm.category3 = "";
+      this.categoryList3 = newList;
     },
     categoryChange3(e) {
-      this.queryParams.categoryId = e
+      this.queryParams.categoryId = e;
     },
 
     handleChange() { },
     // 下一步
     next() {
-      const { urls } = this.form
+      const { urls } = this.form;
       if (!urls.trim()) {
-        this.$modal.msgError('请输入要复制的地址')
-        return
+        this.$modal.msgError("请输入要复制的地址");
+        return;
       }
-      const addarr = urls.split('\n')
-      this.step = 2
-      this.queryParams.urls = addarr
+      const addarr = urls.split("\n");
+      this.step = 2;
+      this.queryParams.urls = addarr;
     },
     // 取消按钮
     cancel() {
-      this.open = false
-      this.reset()
+      this.open = false;
+      this.reset();
     },
     // 表单重置
     reset() {
@@ -346,57 +355,97 @@ export default {
         leader: undefined,
         phone: undefined,
         email: undefined,
-        status: '0'
-      }
-      this.resetForm('form')
+        status: "0",
+      };
+      this.resetForm("form");
     },
     // 查看记录
     copyLog() {
-      this.$router.push('/copy/record')
+      this.$router.push("/copy/record");
     },
 
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm('queryForm')
-      this.handleQuery()
+      this.resetForm("queryForm");
+      this.handleQuery();
     },
 
     /** 提交按钮 */
     submitForm: function () {
-      this.$refs['form'].validate(valid => {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.deptId !== undefined) {
-            updateDept(this.form).then(response => {
-              this.$modal.msgSuccess('修改成功')
-              this.open = false
-              this.getList()
-            })
+            updateDept(this.form).then((response) => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
           } else {
-            addDept(this.form).then(response => {
-              this.$modal.msgSuccess('新增成功')
-              this.open = false
-              this.getList()
-            })
+            addDept(this.form).then((response) => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
           }
         }
-      })
+      });
     },
     submitFormStep2(formName) {
-      console.log(this.queryParams.categoryId)
       if (!this.queryParams.categoryId) {
-        this.$modal.msgError('商品分类没有选择完全')
-        return
+        this.$modal.msgError("商品分类没有选择完全");
+        return;
       }
-      submitTask(this.queryParams).then(res => {
-        this.dialogVisible = true
-      })
+      if (!this.ruleForm.express) {
+        this.$modal.msgError("请选择运费模版");
+        return;
+      }
+      if (!this.ruleForm.price) {
+        this.$modal.msgError("请输入销售价格");
+        return;
+      }
+      if (!this.ruleForm.multiple || this.ruleForm.multiple >= 10) {
+        this.$modal.msgError("请输入合适的价格倍数");
+        return;
+      }
+      if (!this.ruleForm.linePrice) {
+        this.$modal.msgError("请输入划线价格");
+        return;
+      }
+      if (this.ruleForm.isAdvanceSSale) {
+        if (!this.ruleForm.time) {
+          this.$modal.msgError("请选择预售时间");
+          return;
+        }
+        let s = (this.ruleForm.time - new Date()) / 1000;
+        if (s <= 0) {
+          this.$modal.msgError("请选择今天至15天以内的时间范围");
+          return;
+        }
+        this.queryParams.time = s;
+        this.queryParams.deliveryTime = 0;
+      } else {
+        this.queryParams.deliveryTime = this.ruleForm.deliveryTime;
+        this.queryParams.time = 0;
+      }
+      this.queryParams.computedPrice = {
+        multiple: this.ruleForm.multiple,
+        price: this.ruleForm.price,
+        linePrice: this.ruleForm.linePrice,
+        operator: this.ruleForm.operator,
+      };
+      this.queryParams.immediatelyOnOfflineFlag = this.ruleForm.immediatelyOnOfflineFlag ? 0 : 1
+      this.queryParams.stock = this.ruleForm.stock || 0;
+      this.queryParams.expressId = this.ruleForm.express;
+      this.queryParams.refundRule = this.ruleForm.refundRule;
+      submitTask(this.queryParams).then((res) => {
+        this.dialogVisible = true;
+      });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields()
-    }
-
-  }
-}
+      this.$refs[formName].resetFields();
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -426,7 +475,7 @@ img {
 }
 
 /deep/ .el-alert__description {
-  font-size: 15px !important
+  font-size: 15px !important;
 }
 </style>
 
